@@ -1,0 +1,39 @@
+/* 
+The Numbers table keeps the value of number and its frequency.
++----------+-------------+
+|  Number  |  Frequency  |
++----------+-------------|
+|  0       |  7          |
+|  1       |  1          |
+|  2       |  3          |
+|  3       |  1          |
++----------+-------------+
+
+In this table, the numbers are 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 3, so the median is (0 + 0) / 2 = 0.
++--------+
+| median |
++--------|
+| 0.0000 |
++--------+
+
+Write a query to find the median of all numbers and name the result as median.
+*/
+
+WITH RECURSIVE expandingCounts AS (
+    SELECT Number, Frequency FROM Numbers
+    UNION ALL
+    SELECT Number, Frequency-1 FROM expandingCounts
+    WHERE Frequency > 1  
+), orderingData AS (
+    SELECT Number, 
+           ROW_NUMBER() OVER(ORDER BY Number) as ordering
+    FROM expandingCounts
+)
+SELECT AVG(Number) AS median
+FROM orderingData
+WHERE CASE
+        WHEN (SELECT SUM(frequency) %2 FROM Numbers)=0 THEN
+              ordering IN((SELECT SUM(frequency)/2 FROM Numbers), 
+                        (SELECT SUM(frequency)/2+1 FROM Numbers))
+        ELSE  ordering = CEILING((SELECT SUM(frequency)/2 FROM Numbers))
+      END
