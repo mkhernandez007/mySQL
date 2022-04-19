@@ -66,3 +66,4 @@ SELECT Employees.employee_id FROM Employees
 JOIN IndirectReportsL1 ON Employees.employee_id = IndirectReportsL1.employee_id
 UNION
 SELECT Employees.employee_id FROM Employees
+JOIN IndirectReportsL2 ON Employees.employee_id = IndirectReportsL2.employee_id
